@@ -16,15 +16,9 @@ namespace App.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
-        public IActionResult Index(int pageSize = 10, int pageNumber = 1, string search = null, int? maritalStatus = null, DateTime? birthDate = null)
+        public IActionResult Index()
         {
-            var clients = _unitOfWork.ClientRepository.GetClients(pageSize,pageNumber,search,maritalStatus, birthDate).ToList();
-            clients.ForEach(c =>
-            {
-                c.MaritalStatus = _unitOfWork.MSRepository.GetById(c.MaritalStatusId);
-            });
-            var result = _mapper.Map<List<ClientDTO>>(clients);
-            return View(result);
+            return View();
         }
 
         [HttpGet]

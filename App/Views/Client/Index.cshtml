@@ -8,7 +8,7 @@
         </div>
         <div class="col-md-2">
             <select id="maritalStatusSelect" class="form-control">
-                <option value="">All</option>
+                <option value="">All </option>
                 <option value="1">Single</option>
                 <option value="2">Married</option>
                 <option value="3">Divorced</option>
@@ -36,8 +36,8 @@
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="clientList">
-                   @*  @foreach (var client in Model)
+             <tbody id="clientList">
+                 @*   @foreach (var client in Model)
                     {
                     <tr>
                         <td>@client.Id</td>
@@ -48,17 +48,18 @@
                         <td>@client.Email</td>
                         <td>
                             <img src="@client.ImagePath" alt="Client Image" />
-                        </td>
+                        </td> 
                         <td>
                             <button onclick="deleteClient(@client.Id)" class="btn btn-danger">Delete</button>
                         </td>
                     </tr>
-                    } *@
-            </tbody>
+                }*@
+            </tbody> 
         </table>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function () {
         getAllClients(1);
