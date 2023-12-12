@@ -3,6 +3,8 @@ using AutoMapper;
 using DAL.Interfaces;
 using EFL.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace App.Controllers
 {
@@ -10,11 +12,13 @@ namespace App.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public ClientController(IUnitOfWork unitOfWork, IMapper mapper)
+        public ClientController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment hostingEnvironment)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _hostingEnvironment = hostingEnvironment;
         }
         public IActionResult Index()
         {
@@ -45,10 +49,10 @@ namespace App.Controllers
 
         public IActionResult CreateOrEdit(int? id)
         {
-            ViewBag.MaritalStatuses = _unitOfWork.MSRepository.GetAll().ToList();
+            ViewBag.MaritalStatuses = _unitOfWork.MSRepository.GetAll().Select(ms => new SelectListItem { Value = ms.Id.ToString(), Text = ms.Status }).ToList();
             if (id == null)
             {
-                return View(new Client());
+                return View(new ClientDTO());
             }
             else
             {
@@ -57,22 +61,43 @@ namespace App.Controllers
                 {
                     return NotFound();
                 }
-                return View(client);
+                var clientDto = _mapper.Map<ClientDTO>(client);
+                return View(clientDto);
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateOrEdit(Client client)
+        public IActionResult CreateOrEdit(ClientDTO model)
         {
-            if (ModelState.IsValid)
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
-               _ = (client.Id == 0) ? _unitOfWork.ClientRepository.Add(client) : _unitOfWork.ClientRepository.Update(client);
-                _unitOfWork.Complete();
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ImageFile.FileName;
+                string uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.ImageFile.CopyTo(fileStream);
+                }
+
+                model.ImagePath = "/images/" + uniqueFileName;
+            }
+
+            var client = _mapper.Map<Client>(model);
+
+            _ = (client.Id == 0) ? _unitOfWork.ClientRepository.Add(client) : _unitOfWork.ClientRepository.Update(client);
+            var result = _unitOfWork.Complete();
+            if (result > 0)
+            {
                 return RedirectToAction("Index");
             }
-            ViewBag.MaritalStatuses = _unitOfWork.MSRepository.GetAll().ToList();
-            return View(client);
+            else
+            {
+                ViewBag.MaritalStatuses = _unitOfWork.MSRepository.GetAll()
+                    .Select(ms => new SelectListItem { Value = ms.Id.ToString(), Text = ms.Status }).ToList();
+                return View(client);
+            }
         }
 
         public IActionResult Delete(int id)

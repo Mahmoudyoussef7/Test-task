@@ -13,7 +13,9 @@ namespace BL.Profiler
     {
         public MappingProfile()
         {
-            CreateMap<Client, ClientDTO>().ForMember(dest => dest.MaritalStatus, opt => opt.MapFrom(src => src.MaritalStatus.Status)).ReverseMap();
+            CreateMap<Client, ClientDTO>().ForMember(dest => dest.MaritalStatus,
+                opt => opt.MapFrom(src => src.MaritalStatus.Status));
+            CreateMap<ClientDTO, Client>();
         }
     }
 }

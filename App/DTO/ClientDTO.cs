@@ -21,5 +21,7 @@ namespace App.DTO
         public string ImagePath { get; set; }
 
         public string MaritalStatus { get; set; }
+        public IFormFile ImageFile { get; set; }
+
     }
 }
