@@ -40,9 +40,12 @@ VALUES
 
 
 	--get all clients SP
-CREATE PROCEDURE SP_GetClients
+create PROCEDURE SP_GetClients
     @PageSize INT,
-    @PageNumber INT
+    @PageNumber INT,
+    @Search NVARCHAR(100) = NULL,
+    @MaritalStatusID INT = NULL,
+    @BirthDate DATE = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -51,6 +54,9 @@ BEGIN
 
     SELECT ID, FirstName, LastName, DateOfBirth, MaritalStatusID, MobileNumber, Email, ImagePath
     FROM Client
+    WHERE (@Search IS NULL OR FirstName LIKE '%' + @Search + '%' OR LastName LIKE '%' + @Search + '%' OR Email LIKE '%' + @Search + '%')
+    AND (@MaritalStatusID IS NULL OR MaritalStatusID = @MaritalStatusID)
+    AND (@BirthDate IS NULL OR DateOfBirth = @BirthDate)
     ORDER BY ID
     OFFSET @Offset ROWS
     FETCH NEXT @PageSize ROWS ONLY;
