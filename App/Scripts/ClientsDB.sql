@@ -18,7 +18,7 @@ VALUES
 
 
 CREATE TABLE Client (
-        ID INT PRIMARY KEY,
+        ID INT PRIMARY KEY IDENTITY(1,1),
         FirstName VARCHAR(100) NOT Null,
         LastName VARCHAR(100) NOT Null,
         DateOfBirth DATE NOT Null,
@@ -30,12 +30,12 @@ CREATE TABLE Client (
     );
 
 
-INSERT INTO Client (ID, FirstName, LastName, DateOfBirth, MaritalStatusID, MobileNumber, Email, ImagePath)
+INSERT INTO Client ( FirstName, LastName, DateOfBirth, MaritalStatusID, MobileNumber, Email, ImagePath)
 VALUES
-    (1, 'Ahmed', 'Ahmed', '1990-05-15', 2, 1234567890, 'johndoe@example.com', '/images/asd.jpg'),
-    (2, 'Mohamed', 'Ahmed', '1985-12-03', 2, 9876543210, 'janesmith@example.com', '/images/asd.jpg'),
-    (3, 'Sara', 'dssdf', '1978-08-20', 1, 4567890123, 'michaeljohnson@example.com', '/images/asd.jpg'),
-    (4, 'saad', 'asd', '1995-04-10', 1, 7890123456, 'emilydavis@example.com', '/images/asd.jpg');
+    ( 'Ahmed', 'Ahmed', '1990-05-15', 2, 1234567890, 'johndoe@example.com', '/images/asd.jpg'),
+    ( 'Mohamed', 'Ahmed', '1985-12-03', 2, 9876543210, 'janesmith@example.com', '/images/asd.jpg'),
+    ( 'Sara', 'dssdf', '1978-08-20', 1, 4567890123, 'michaeljohnson@example.com', '/images/asd.jpg'),
+    ( 'saad', 'asd', '1995-04-10', 1, 7890123456, 'emilydavis@example.com', '/images/asd.jpg');
 
 
 
