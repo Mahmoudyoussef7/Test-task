@@ -1,0 +1,114 @@
+﻿@model IEnumerable<ClientDTO>
+
+<div class="container">
+    <h1>Client List</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <input type="text" id="searchInput" placeholder="Search by name, phone, or email" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <select id="maritalStatusSelect" class="form-control">
+                <option value="">All</option>
+                <option value="1">Single</option>
+                <option value="2">Married</option>
+                <option value="3">Divorced</option>
+                <option value="4">Widowed</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="date" id="birthDateInput" class="form-control">
+        </div>
+        <div class="col-md-2">
+            <button id="searchButton" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Marital Status</th>
+                    <th>Mobile Number</th>
+                    <th>Email</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="clientList">
+                   @*  @foreach (var client in Model)
+                    {
+                    <tr>
+                        <td>@client.Id</td>
+                        <td>@client.FirstName @client.LastName</td>
+                        <td>@client.DateOfBirth.ToShortDateString()</td>
+                        <td>@client.MaritalStatus</td>
+                        <td>@client.MobileNumber</td>
+                        <td>@client.Email</td>
+                        <td>
+                            <img src="@client.ImagePath" alt="Client Image" />
+                        </td>
+                        <td>
+                            <button onclick="deleteClient(@client.Id)" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    } *@
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        getAllClients(1);
+
+        $(document).on("click", ".page-link", function () {
+            var pageNumber = $(this).text();
+            getAllClients(pageNumber);
+        });
+
+        function getAllClients(pageNumber) {
+            var pageSize = 10;
+            var searchInput = $("#searchInput").val();
+            var maritalStatus = $("#maritalStatusSelect").val();
+            var birthDate = $("#birthDateInput").val();
+
+            $.get("/Client/GetAllClients", { pageSize: pageSize, pageNumber: pageNumber, search: searchInput, maritalStatus: maritalStatus, birthDate: birthDate }, function (data) {
+                updateClientList(data);
+            });
+        }
+
+        function updateClientList(data) {
+            $("#clientList").empty();
+            data.forEach(function (client) {
+                var clientHtml = "<tr>";
+                clientHtml += "<td>" + client.Id + "</td>";
+                clientHtml += "<td>" + client.FirstName + " " + client.LastName + "</td>";
+                clientHtml += "<td>" + client.DateOfBirth + "</td>";
+                clientHtml += "<td>" + client.MaritalStatus + "</td>";
+                clientHtml += "<td>" + client.MobileNumber + "</td>";
+                clientHtml += "<td>" + client.Email + "</td>";
+                clientHtml += "<td><img src='" + client.ImagePath + "' alt='Client Image' /></td>";
+                clientHtml += "<td><button onclick='deleteClient(" + client.Id + ")'>Delete</button></td>";
+                clientHtml += "</tr>";
+                $("#clientList").append(clientHtml);
+            });
+        }
+
+        function deleteClient(id) {
+            $.post("/Client/Delete", { id: id }, function (data) {
+                if (data.success) {
+                    getAllClients(1);
+                } else {
+                    alert("Failed to delete client.");
+                }
+            });
+        }
+
+        $("#searchButton").click(function () {
+            getAllClients(1); 
+        });
+    });
+
+</script>
